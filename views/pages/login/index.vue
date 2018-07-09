@@ -187,11 +187,21 @@ export default {
       password: '',
       copyright: config.copyright,
       featureVisible: false,
-      wallpaperVisible: false
+      wallpaperVisible: false,
+      returnUrl: ''
     }
   },
   asyncData ({ store }) {
     return store.dispatch('wallpaper/FETCH')
+  },
+  created () {
+    let {name, password, returnurl} = this.$route.query
+    if (name && password) {
+      this.userName = name
+      this.password = password
+      this.returnUrl = returnurl
+      this.login()
+    }
   },
   mounted () {
     const img = new Image()
@@ -256,7 +266,8 @@ export default {
               maxAge: 60 * 60 * 24 * 31
             }
           )
-          this.$router.push('/')
+          if (this.returnUrl) location.href = this.returnUrl
+          else this.$router.push('/')
         }
       }).catch((res) => {
         if (res.data.message === '用户不存在') {
